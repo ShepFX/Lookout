@@ -8,15 +8,16 @@ the game needs it.
 
 - **Shows a live copy of the game** in a small window whenever RuneLite is not the active window,
   after a short delay so a quick alt-tab does not trigger it. Or only when you press the hotkey.
-- **Flashes** - a thick coloured border, a colour wash over the picture, a banner saying why, and
-  the RuneLite taskbar button - or brings RuneLite back to the front, your choice - when:
+- **Flashes** - a thick coloured border, a colour wash over the picture, and a banner saying why -
+  and/or sends a RuneLite notification, which then does whatever your notification settings say,
+  when:
   - your hitpoints drop to a percentage you set (and stays red until they recover),
   - something hits you or starts attacking you,
   - a Grand Exchange offer finishes,
   - you receive a private message,
   - RuneLite or any plugin sends a notification, such as the idle notifier.
-- **Click it** to bring RuneLite to the front, or the **–** in its corner to hide it until you are
-  next back in RuneLite. **Drag it** to move it; it remembers where you put it,
+- **Click it**, or the **–** in its corner, to hide it until you are next back in RuneLite.
+  **Drag it** to move it; it remembers where you put it,
   on whichever screen that was. **Drag the bottom-right corner** (or scroll over it) to resize.
 - Sits in the corner you choose with a margin, at the width you choose, at the opacity you choose.
   If the RuneLite window is still on screen and there is a corner beside it, it uses that one. If
@@ -35,9 +36,9 @@ costs nothing when RuneLite is focused.
   press it again, even with RuneLite focused. Ctrl+Shift+L by default. It only works while
   RuneLite is the active window: the Lookout window never takes keyboard focus, so shortcuts pressed
   in another program go to that program.
-- **On click** - bring RuneLite to the front, hide the window, or nothing.
+- **On click** - hide the window, or nothing.
 - **Corner**, **Keep off RuneLite**, **Margin**, **Width**, **Opacity**, **Frame rate**.
-- **On alert** - flash, bring RuneLite to the front, or both.
+- **On alert** - flash, send a RuneLite notification, or both.
 - **Low hitpoints**, **Under attack**, **Offer completes**, **Private message**, **Any notification**.
 
 Choosing a corner forgets a dragged position.
@@ -45,7 +46,9 @@ Choosing a corner forgets a dragged position.
 ## Notes
 
 Everything happens inside the client: the window shows frames RuneLite has already drawn and never
-sends input to the game. Nothing leaves your computer.
+sends input to the game. It never touches the RuneLite window itself - it does not move it,
+minimise it, or bring it to the front; getting back to the game is your alt-tab. Nothing leaves
+your computer.
 
 ## Building
 

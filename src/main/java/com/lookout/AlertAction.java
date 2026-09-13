@@ -6,17 +6,17 @@ import lombok.AllArgsConstructor;
 public enum AlertAction
 {
 	FLASH("Flash the window"),
-	FOCUS_CLIENT("Bring RuneLite to the front"),
-	BOTH("Flash and bring RuneLite to the front");
+	NOTIFY("Send a RuneLite notification"),
+	BOTH("Flash and send a notification");
 
 	private final String label;
 
 	boolean flashes()
 	{
-		return this != FOCUS_CLIENT;
+		return this != NOTIFY;
 	}
 
-	boolean focuses()
+	boolean notifies()
 	{
 		return this != FLASH;
 	}

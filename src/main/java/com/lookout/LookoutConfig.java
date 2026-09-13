@@ -50,7 +50,7 @@ public interface LookoutConfig extends Config
 	@ConfigItem(keyName = "clickAction", name = "On click", description = "What a click on the Lookout window does. Dragging always moves it", section = showing, position = 3)
 	default ClickAction clickAction()
 	{
-		return ClickAction.FOCUS_CLIENT;
+		return ClickAction.HIDE_LOOKOUT;
 	}
 
 	@ConfigItem(keyName = KEY_CORNER, name = "Corner", description = "Which corner of the screen the window sits in, until you drag it somewhere else", section = window, position = 0)
@@ -96,7 +96,7 @@ public interface LookoutConfig extends Config
 		return 15;
 	}
 
-	@ConfigItem(keyName = "alertAction", name = "On alert", description = "What an alert does to the Lookout window", section = alerts, position = 0)
+	@ConfigItem(keyName = "alertAction", name = "On alert", description = "Flash the Lookout window, send a RuneLite notification (which follows your notification settings), or both", section = alerts, position = 0)
 	default AlertAction alertAction()
 	{
 		return AlertAction.FLASH;

@@ -38,16 +38,16 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.NotificationFired;
+import net.runelite.client.Notifier;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.HotkeyListener;
 
 @PluginDescriptor(
 	name = "Lookout",
-	description = "A small always-on-top view of the game while you are in another window, that flashes or brings the client back when something needs you",
+	description = "A small always-on-top view of the game while you are in another window, that flashes when something needs you",
 	tags = {"picture", "pip", "mini", "window", "afk", "focus", "always on top", "alert"}
 )
 public class LookoutPlugin extends Plugin
@@ -57,13 +57,14 @@ public class LookoutPlugin extends Plugin
 	private static final Color MESSAGE = new Color(80, 155, 255);
 	private static final Color NOTIFICATION = Color.WHITE;
 	private static final int FLASH_MS = 4000;
+	private static final String NOTIFICATION_PREFIX = "Lookout: ";
 	/** Being hit again a moment later is the same fight, not a new alert. */
 	private static final long ATTACK_REPEAT_MS = 6000;
 	/** How often to look again while RuneLite is unfocused but probably still in view. */
 	private static final int RECHECK_MS = 1000;
 
 	@Inject private Client client;
-	@Inject private ClientUI clientUI;
+	@Inject private Notifier notifier;
 	@Inject private LookoutConfig config;
 	@Inject private ConfigManager configManager;
 	@Inject private DrawManager drawManager;
@@ -220,6 +221,8 @@ public class LookoutPlugin extends Plugin
 	@Subscribe
 	public void onNotificationFired(NotificationFired event)
 	{
+		// Our own notifications must not come back round as alerts.
+		if (event.getMessage() != null && event.getMessage().startsWith(NOTIFICATION_PREFIX)) return;
 		if (config.alertOnNotification()) alert(NOTIFICATION, "Notification");
 	}
 
@@ -231,19 +234,18 @@ public class LookoutPlugin extends Plugin
 		alert(ATTACK, "Under attack");
 	}
 
-	/** An alert only matters while the Lookout window is what the user can see. */
+	/**
+	 * An alert only matters while the Lookout window is what the user can see. A notification goes
+	 * through RuneLite's own notifier, so it does whatever the user's notification settings say.
+	 */
 	private void alert(Color color, String label)
 	{
 		SwingUtilities.invokeLater(() ->
 		{
 			if (window == null || !window.isVisible()) return;
 			AlertAction action = config.alertAction();
-			if (action.flashes())
-			{
-				window.flash(color, label, FLASH_MS);
-				clientUI.flashTaskbar();
-			}
-			if (action.focuses()) focusClient();
+			if (action.flashes()) window.flash(color, label, FLASH_MS);
+			if (action.notifies()) notifier.notify(NOTIFICATION_PREFIX + label);
 		});
 	}
 
@@ -418,17 +420,7 @@ public class LookoutPlugin extends Plugin
 
 	private void clicked()
 	{
-		switch (config.clickAction())
-		{
-			case FOCUS_CLIENT:
-				focusClient();
-				break;
-			case HIDE_LOOKOUT:
-				hide();
-				break;
-			default:
-				break;
-		}
+		if (config.clickAction() == ClickAction.HIDE_LOOKOUT) hide();
 	}
 
 	/** Hides the window until RuneLite has been focused again, so it does not come straight back. */
@@ -438,14 +430,6 @@ public class LookoutPlugin extends Plugin
 		autoShown = false;
 		dismissed = true;
 		updateVisibility();
-	}
-
-	private void focusClient()
-	{
-		pinned = false;
-		autoShown = false;
-		updateVisibility();
-		clientUI.forceFocus();
 	}
 
 	private void scrolled(int notches)
