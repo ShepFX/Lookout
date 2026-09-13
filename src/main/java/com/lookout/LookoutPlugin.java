@@ -9,8 +9,8 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.MouseInfo;
-import java.awt.PointerInfo;
 import java.awt.Point;
+import java.awt.PointerInfo;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -305,12 +305,12 @@ public class LookoutPlugin extends Plugin
 		updateVisibility();
 	}
 
-	/** Whether any window of this client has focus - the game, a config dialog, a detached panel. */
-	private static boolean anyOwnWindowFocused()
+	/** Whether one of the client's own dialogs has focus rather than another program. */
+	private boolean anyOwnWindowFocused()
 	{
-		for (Window window : Window.getWindows())
+		for (Window owned : clientWindow.getOwnedWindows())
 		{
-			if (window.isFocused()) return true;
+			if (owned.isFocused()) return true;
 		}
 		return false;
 	}
@@ -373,9 +373,9 @@ public class LookoutPlugin extends Plugin
 
 	/**
 	 * Java cannot ask whether another program covers RuneLite, so this reads the one clue there is:
-	 * RuneLite just lost focus, and if the mouse is inside its rectangle then whatever took the focus
-	 * is sitting on top of it. A pointer outside that rectangle means the user clicked beside
-	 * RuneLite and can still see it, unless there is a spare corner to show the window in anyway.
+	 * RuneLite just lost focus, and if the mouse is inside its window then whatever took the focus
+	 * is sitting on top of it. A pointer outside the window means the user clicked beside RuneLite
+	 * and can still see it, unless there is a spare corner to show the window in anyway.
 	 */
 	private boolean clientProbablyVisible()
 	{
@@ -383,6 +383,7 @@ public class LookoutPlugin extends Plugin
 		if (bounds == null) return false;
 		Dimension size = LookoutGeometry.size(config.width(), window.getSource());
 		if (LookoutGeometry.hasClearCorner(config.margin(), workArea(clientScreen()), size, bounds)) return false;
+		// Only the pointer's position is read - never which window it is over.
 		PointerInfo pointer = MouseInfo.getPointerInfo();
 		return pointer != null && !bounds.contains(pointer.getLocation());
 	}
