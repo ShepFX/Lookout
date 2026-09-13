@@ -8,7 +8,6 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
-import java.awt.KeyboardFocusManager;
 import java.awt.MouseInfo;
 import java.awt.PointerInfo;
 import java.awt.Point;
@@ -293,10 +292,8 @@ public class LookoutPlugin extends Plugin
 
 	private void autoShow()
 	{
-		Window focused = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusedWindow();
 		// Focus may have gone to another RuneLite window - a config dialog, say - rather than away.
-		if (clientWindow == null || clientWindow.isFocused()) return;
-		if (focused != null) return;
+		if (clientWindow == null || clientWindow.isFocused() || anyOwnWindowFocused()) return;
 		if (config.mode() != LookoutMode.WHEN_UNFOCUSED || dismissed) return;
 		if (clientProbablyVisible())
 		{
@@ -306,6 +303,16 @@ public class LookoutPlugin extends Plugin
 		showTimer.stop();
 		autoShown = true;
 		updateVisibility();
+	}
+
+	/** Whether any window of this client has focus - the game, a config dialog, a detached panel. */
+	private static boolean anyOwnWindowFocused()
+	{
+		for (Window window : Window.getWindows())
+		{
+			if (window.isFocused()) return true;
+		}
+		return false;
 	}
 
 	private void togglePinned()
