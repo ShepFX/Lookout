@@ -8,3 +8,9 @@ nbactions.xml
 nb-configuration.xml
 nbproject/
 server/
+
+# Instructions for AI coding tools; kept locally, not published
+AGENTS.md
+CLAUDE.md
+.claude/
+.agents/
